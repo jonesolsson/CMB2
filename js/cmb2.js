@@ -311,106 +311,125 @@ window.CMB2 = (function(window, document, $, undefined){
 	};
 
 	cmb.cleanRow = function( $row, prevNum, group ) {
-		var $inputs = $row.find( cmb.repeatUpdate );
-		if ( group ) {
+    var $inputs = $row.find( cmb.repeatUpdate );
+    if ( group ) {
 
-			var $other  = $row.find( '[id]' ).not( cmb.repeatUpdate );
+        var $other  = $row.find( '[id]' ).not( cmb.repeatUpdate );
 
-			// Remove extra ajaxed rows
-			$row.find('.cmb-repeat-table .cmb-repeat-row:not(:first-child)').remove();
+        // Remove extra ajaxed rows
+        $row.find('.cmb-repeat-table .cmb-repeat-row:not(:first-child)').remove();
 
-			// Update all elements w/ an ID
-			if ( $other.length ) {
-				$other.each( function() {
-					var $_this = $( this );
-					var oldID = $_this.attr( 'id' );
-					var newID = oldID.replace( '_'+ prevNum, '_'+ cmb.idNumber );
-					var $buttons = $row.find('[data-selector="'+ oldID +'"]');
-					$_this.attr( 'id', newID );
+        // Update all elements w/ an ID
+        if ( $other.length ) {
+            $other.each( function() {
+                var $_this = $( this );
+                var oldID = $_this.attr( 'id' );
+                var newID = oldID.replace( '_'+ prevNum, '_'+ cmb.idNumber );
+                var $buttons = $row.find('[data-selector="'+ oldID +'"]');
+                $_this.attr( 'id', newID );
 
-					// Replace data-selector vars
-					if ( $buttons.length ) {
-						$buttons.attr( 'data-selector', newID ).data( 'selector', newID );
-					}
-				});
-			}
-		}
-		cmb.neweditor_id = [];
+                // Replace data-selector vars
+                if ( $buttons.length ) {
+                    $buttons.attr( 'data-selector', newID ).data( 'selector', newID );
+                }
+            });
+        }
+    }
+    cmb.neweditor_id = [];
 
-		$inputs.filter(':checked').prop( 'checked', false );
-		$inputs.filter(':selected').prop( 'selected', false );
+    $inputs.filter(':checked').prop( 'checked', false );
+    $inputs.filter(':selected').prop( 'selected', false );
 
-		if ( $row.find('h3.cmb-group-title').length ) {
-			$row.find( 'h3.cmb-group-title' ).text( $row.data( 'title' ).replace( '{#}', ( cmb.idNumber + 1 ) ) );
-		}
+    if ( $row.find('h3.cmb-group-title').length ) {
+        $row.find( 'h3.cmb-group-title' ).text( $row.data( 'title' ).replace( '{#}', ( cmb.idNumber + 1 ) ) );
+    }
 
-		$inputs.each( function(){
-			var $newInput = $( this );
-			var isEditor  = $newInput.hasClass( 'wp-editor-area' );
-			var oldFor    = $newInput.attr( 'for' );
-			var oldVal    = $newInput.val();
-			var type      = $newInput.prop( 'type' );
-			var checkable = 'radio' === type || 'checkbox' === type ? oldVal : false;
-			// var $next  = $newInput.next();
-			var attrs     = {};
-			var newID, oldID;
-			if ( oldFor ) {
-				attrs = { 'for' : oldFor.replace( '_'+ prevNum, '_'+ cmb.idNumber ) };
-			} else {
-				var oldName = $newInput.attr( 'name' );
-				// Replace 'name' attribute key
-				var newName = oldName ? oldName.replace( '['+ prevNum +']', '['+ cmb.idNumber +']' ) : '';
-				oldID       = $newInput.attr( 'id' );
-				newID       = oldID ? oldID.replace( '_'+ prevNum, '_'+ cmb.idNumber ) : '';
-				attrs       = {
-					id: newID,
-					name: newName,
-					// value: '',
-					'data-iterator': cmb.idNumber,
-				};
+    $inputs.each( function(){
+        var $newInput = $(this);
+        var isEditor  = $newInput.hasClass( 'wp-editor-area' );
+        var oldFor    = $newInput.attr( 'for' );
+        var oldVal    = $newInput.attr( 'value' );
+        var type      = $newInput.prop( 'type' );
+        var checkable = 'radio' === type || 'checkbox' === type ? oldVal : false;
+        // var $next  = $newInput.next();
+        var attrs     = {};
+        var newID, oldID;
+        var newName, oldName;
+        if ( oldFor ) {
+            attrs = { 'for' : oldFor.replace( '_'+ prevNum, '_'+ cmb.idNumber ) };
+        } else {
+            oldName = $newInput.attr( 'name' );
+            // Replace 'name' attribute key
 
-			}
+            if (group) {
+                newName = oldName ? oldName.replace( '['+ prevNum +']', '['+ cmb.idNumber +']' ) : '';
+                oldID       = $newInput.attr( 'id' );
+                newID       = oldID ? oldID.replace( '_'+ prevNum, '_'+ cmb.idNumber ) : '';
 
-			// Clear out old values
-			if ( undefined !== typeof( oldVal ) && oldVal || checkable ) {
-				attrs.value = checkable ? checkable : '';
-			}
+                // Fix row issues.
+                if ($newInput.parent().parent().hasClass('empty-row')) {
+                    newName = newName ? newName.substring(0, newName.lastIndexOf('[')) + '[1]' : '';
+                    newID = newID ? newID.substring(0, newID.lastIndexOf('_')) + '_1' : '';
+                }
 
-			// Clear out textarea values
-			if ( 'TEXTAREA' === $newInput.prop('tagName') ) {
-				$newInput.html( '' );
-			}
+            } else {
 
-			if ( checkable ) {
-				$newInput.removeAttr( 'checked' );
-			}
+                newName = oldName ? oldName.substring(0, oldName.lastIndexOf('[')) + '[' + cmb.idNumber + ']' : '';
+                oldID       = $newInput.attr( 'id' );
+                newID       = oldID ? oldID.substring(0, oldID.lastIndexOf('_')) + '_' + cmb.idNumber : '';
 
-			$newInput
-				.removeClass( 'hasDatepicker' )
-				.attr( attrs ).val( checkable ? checkable : '' );
+            }
 
-			// wysiwyg field
-			if ( isEditor ) {
-				// Get new wysiwyg ID
-				newID = newID ? oldID.replace( 'zx'+ prevNum, 'zx'+ cmb.idNumber ) : '';
-				// Empty the contents
-				$newInput.html('');
-				// Get wysiwyg field
-				var $wysiwyg = $newInput.parents( '.cmb-type-wysiwyg' );
-				// Remove extra mce divs
-				$wysiwyg.find('.mce-tinymce:not(:first-child)').remove();
-				// Replace id instances
-				var html = $wysiwyg.html().replace( new RegExp( oldID, 'g' ), newID );
-				// Update field html
-				$wysiwyg.html( html );
-				// Save ids for later to re-init tinymce
-				cmb.neweditor_id.push( { 'id': newID, 'old': oldID } );
-			}
-		});
+            attrs = {
+                id: newID,
+                name: newName,
+                // value: '',
+                'data-iterator': cmb.idNumber,
+            };
 
-		return cmb;
+
+        }
+
+        // Clear out old values
+        if ( undefined !== typeof( oldVal ) && oldVal || checkable ) {
+            attrs.value = checkable ? checkable : '';
+        }
+
+        // Clear out textarea values
+        if ( 'TEXTAREA' === $newInput.prop('tagName') ) {
+            $newInput.html( '' );
+        }
+
+        if ( checkable ) {
+            $newInput.removeAttr( 'checked' );
+        }
+
+        $newInput
+            .removeClass( 'hasDatepicker' )
+            .attr( attrs ).val( checkable ? checkable : '' );
+
+        // wysiwyg field
+        if ( isEditor ) {
+            // Get new wysiwyg ID
+            newID = newID ? oldID.replace( 'zx'+ prevNum, 'zx'+ cmb.idNumber ) : '';
+            // Empty the contents
+            $newInput.html('');
+            // Get wysiwyg field
+            var $wysiwyg = $newInput.parents( '.cmb-type-wysiwyg' );
+            // Remove extra mce divs
+            $wysiwyg.find('.mce-tinymce:not(:first-child)').remove();
+            // Replace id instances
+            var html = $wysiwyg.html().replace( new RegExp( oldID, 'g' ), newID );
+            // Update field html
+            $wysiwyg.html( html );
+            // Save ids for later to re-init tinymce
+            cmb.neweditor_id.push( { 'id': newID, 'old': oldID } );
+        }
+    });
+
+    return cmb;
 	};
-
+	
 	cmb.newRowHousekeeping = function( $row ) {
 
 		var $colorPicker = $row.find( '.wp-picker-container' );

@@ -70,7 +70,7 @@ class CMB2_JS {
 		$min   = $debug ? '' : '.min';
 
 		// Register cmb JS
-		wp_enqueue_script( self::$handle, cmb2_utils()->url( "js/cmb2{$min}.js" ), $dependencies, CMB2_VERSION, true );
+		wp_enqueue_script( self::$handle, cmb2_utils()->url( "js/cmb2.js" ), $dependencies, CMB2_VERSION, true );
 
 		self::localize( $debug );
 	}
