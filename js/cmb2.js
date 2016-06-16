@@ -374,7 +374,7 @@ window.CMB2 = (function(window, document, $, undefined){
 
             } else {
 
-                newName = oldName ? oldName.substring(0, oldName.lastIndexOf('[')) + '[' + cmb.idNumber + ']' : '';
+                newName = oldName ? oldName.replace( ']['+ prevNum +']', ']['+ cmb.idNumber +']' ) : '';
                 oldID       = $newInput.attr( 'id' );
                 newID       = oldID ? oldID.substring(0, oldID.lastIndexOf('_')) + '_' + cmb.idNumber : '';
 
@@ -429,7 +429,7 @@ window.CMB2 = (function(window, document, $, undefined){
 
     return cmb;
 	};
-	
+
 	cmb.newRowHousekeeping = function( $row ) {
 
 		var $colorPicker = $row.find( '.wp-picker-container' );
