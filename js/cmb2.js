@@ -369,8 +369,8 @@ window.CMB2 = (function(window, document, $, undefined){
                 // Fix row issues.
                 if ($newInput.closest('.empty-row').length) {
 										newName = newName ? newName.replace(/]\[[0-9]+\]/, '][1]') : '';
-                    //newName = newName ? newName.substring(0, newName.lastIndexOf('[')) + '[1]' : '';
                     newID = newID ? newID.substring(0, newID.lastIndexOf('_')) + '_1' : '';
+										$newInput.prop('disabled', true);
                 }
 
             } else {
@@ -378,6 +378,7 @@ window.CMB2 = (function(window, document, $, undefined){
                 newName = oldName ? oldName.replace( ']['+ prevNum +']', ']['+ cmb.idNumber +']' ) : '';
                 oldID       = $newInput.attr( 'id' );
                 newID       = oldID ? oldID.substring(0, oldID.lastIndexOf('_')) + '_' + cmb.idNumber : '';
+								$newInput.prop('disabled', true);
 
             }
 
@@ -538,6 +539,7 @@ window.CMB2 = (function(window, document, $, undefined){
 
 		cmb.afterRowInsert( $newRow );
 
+
 		if ( $table.find('.cmb-repeatable-grouping').length <= 1 ) {
 			$table.find('.cmb-remove-group-row').prop( 'disabled', true );
 		} else {
@@ -561,6 +563,8 @@ window.CMB2 = (function(window, document, $, undefined){
 
 		$emptyrow.removeClass('empty-row hidden').addClass('cmb-repeat-row');
 		$emptyrow.after( $row );
+
+		$emptyrow.find('input[disabled]').removeProp('disabled');
 
 		cmb.afterRowInsert( $row );
 
