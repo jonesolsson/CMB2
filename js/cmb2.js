@@ -367,8 +367,9 @@ window.CMB2 = (function(window, document, $, undefined){
                 newID       = oldID ? oldID.replace( '_'+ prevNum, '_'+ cmb.idNumber ) : '';
 
                 // Fix row issues.
-                if ($newInput.parent().parent().hasClass('empty-row')) {
-                    newName = newName ? newName.substring(0, newName.lastIndexOf('[')) + '[1]' : '';
+                if ($newInput.closest('.empty-row').length) {
+										newName = newName ? newName.replace(/]\[[0-9]+\]/, '][1]') : '';
+                    //newName = newName ? newName.substring(0, newName.lastIndexOf('[')) + '[1]' : '';
                     newID = newID ? newID.substring(0, newID.lastIndexOf('_')) + '_1' : '';
                 }
 
@@ -532,6 +533,7 @@ window.CMB2 = (function(window, document, $, undefined){
 		$row.find( '.cmb-add-row-button' ).prop( 'disabled', false );
 
 		var $newRow = $( '<div class="postbox cmb-row cmb-repeatable-grouping" data-iterator="'+ cmb.idNumber +'">'+ $row.html() +'</div>' );
+
 		$oldRow.after( $newRow );
 
 		cmb.afterRowInsert( $newRow );
