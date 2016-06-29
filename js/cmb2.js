@@ -360,7 +360,6 @@ window.CMB2 = (function(window, document, $, undefined){
         } else {
             oldName = $newInput.attr( 'name' );
             // Replace 'name' attribute key
-
             if (group) {
                 newName = oldName ? oldName.replace( '['+ prevNum +']', '['+ cmb.idNumber +']' ) : '';
                 oldID       = $newInput.attr( 'id' );
@@ -375,7 +374,7 @@ window.CMB2 = (function(window, document, $, undefined){
 
             } else {
 
-                newName = oldName ? oldName.replace( ']['+ prevNum +']', ']['+ cmb.idNumber +']' ) : '';
+								newName = oldName ? oldName.replace(/]\[[0-9]+\]/, '][' + cmb.idNumber + ']') : '';
                 oldID       = $newInput.attr( 'id' );
                 newID       = oldID ? oldID.substring(0, oldID.lastIndexOf('_')) + '_' + cmb.idNumber : '';
 								$newInput.prop('disabled', true);
@@ -388,7 +387,6 @@ window.CMB2 = (function(window, document, $, undefined){
                 // value: '',
                 'data-iterator': cmb.idNumber,
             };
-
 
         }
 
